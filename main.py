@@ -29,13 +29,13 @@ def list_upcomming_events():
         service = build("calendar", "v3", credentials=creds)
 
         # Call the Calendar API
-        now = datetime.utcnow().isoformat() + "Z"	# 'Z' indicates UTC time
+        now = (datetime.utcnow() - timedelta(hours=HOURS_BUFFER_FOR_UPCOMMING)).isoformat() + "Z"	# 'Z' indicates UTC time
         events_result = (
                 service.events()
                 .list(
                         calendarId="primary",
                         timeMin=now,
-                        maxResults=10,
+                        maxResults=UPCOMMING_EVENTS_NO,
                         singleEvents=True,
                         orderBy="startTime",
                 )

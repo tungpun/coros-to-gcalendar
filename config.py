@@ -40,6 +40,8 @@ if not creds or not creds.valid:
     with open("token.json", "w") as token:
         token.write(creds.to_json())
 
+HOURS_BUFFER_FOR_UPCOMMING = 24
+UPCOMMING_EVENTS_NO = 20
 
 REQ_RETRY_TIMES = 12
 RETRY_BACKOFF = 2
