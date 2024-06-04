@@ -7,6 +7,8 @@ This task is programmed to synchronize activities from the Coros Training Plan w
 * The `credentials.json` file to manage events in your Google Calendar.
   > Follow the instruction here: https://developers.google.com/calendar/api/quickstart/python#enable_the_api
 
+* Fill your Coros access token in the file `.env`
+
 * Install python packages
   ```
   pip3 install -r requirements.txt
