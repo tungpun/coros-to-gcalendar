@@ -9,20 +9,33 @@ from config import *
 
 @retry(tries=REQ_RETRY_TIMES, backoff=RETRY_BACKOFF, delay=RETRY_DELAY)
 def get_coros_exercises(start_date = None):
+
     if start_date is None:
         current_date = datetime.today()
         start_date = current_date.strftime('%Y%m%d')
         date = current_date + timedelta(days=10)    # upcomming 10 days
         end_date = date.strftime('%Y%m%d')
 
-    logger.info(f"get_coros_exercises {start_date} {end_date}")
+    logger.info(f"Fetch exercises in Coros app {start_date} {end_date}")
     url = f'https://teamapi.coros.com/training/schedule/query?startDate={start_date}&endDate={end_date}&supportRestExercise=1'    
-    r = requests.get(url=url, headers=COROS_HEADERS, timeout=8)
-    text = r.text
-    data = json.loads(text)["data"]["entities"]
+    try:
+        r = requests.get(url=url, headers=COROS_HEADERS, timeout=8)
+        text = r.text
+        json_data = json.loads(text)
+        if "message" in json_data and json_data["message"] == "Access token is invalid":
+            sentry_sdk.capture_message(Exception("Coros access token is invalid already"))
+            logger.error("Coros access token is invalid already")
+            exit(0)
+        data = json_data["data"]["entities"]
+        logger.info(f"found {len(data)} activities")
+    except Exception as e:
+        logger.error("caught exeception in func get_coros_exercises")
+        sentry_sdk.capture_exception(e)
+        raise e
     return data
 
 
+@retry(tries=REQ_RETRY_TIMES, backoff=RETRY_BACKOFF, delay=RETRY_DELAY)
 def list_upcomming_events():
     try:
         upcomming_events = set()
@@ -55,6 +68,7 @@ def list_upcomming_events():
         return upcomming_events
 
     except HttpError as error:
+        logger.error(f"An error occurred: {error}")
         raise Exception(f"An error occurred: {error}")
 
 
