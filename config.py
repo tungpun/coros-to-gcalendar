@@ -73,7 +73,7 @@ COROS_HEADERS = {
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn="https://c73548e99ad8678a3b9c12d128c68194@o4507383668670464.ingest.us.sentry.io/4507422580932608",
+    dsn="https://<sentry_url>",
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     traces_sample_rate=1.0,
